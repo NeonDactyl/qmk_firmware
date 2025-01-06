@@ -63,9 +63,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_NUMNAV] = LAYOUT_ortho_4x12(
         _____      , KC_1       , KC_2       , KC_3       , KC_4       , KC_5       , KC_6       , KC_7       , KC_8       , KC_9       , KC_0       , _____      ,
-        _____      , _____      , _____      , MS_WHLU    , _____      , KC_PGUP    , MS_WHLU    , MS_BTN1    , MS_UP      , MS_BTN2    , MS_BTN3    , _____      ,
+        _____      , _____      , _____      , MS_WHLU    , _____      , KC_PGUP    , MS_WHLU    , MS_BTN1    , MS_UP      , MS_BTN2    , _____      , _____      ,
         _____      , _____      , MS_WHLL    , MS_WHLD    , MS_WHLR    , KC_PGDN    , MS_WHLD    , MS_LEFT    , MS_DOWN    , MS_RGHT    , _____      , _____      ,
-        _____      , KC_ACL0    , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , KC_ACL0    , _____
+        _____      , KC_ACL0    , _____      , _____      , _____      , _____      , _____      , _____      , MS_BTN3    , _____      , KC_ACL0    , _____
     ),
     [_ADJUST] = LAYOUT_ortho_4x12(
         QK_BOOT    , UG_TOGG    , UG_HUEU    , UG_SATU    , UG_VALU    , _____      , _____      , _____      , _____      , _____      , _____      , DB_TOGG    ,
