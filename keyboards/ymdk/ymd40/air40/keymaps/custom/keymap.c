@@ -35,6 +35,7 @@ enum layer_names {
 #define DVRK DF(_DVORAK)
 #define QWRT DF(_QWERTY)
 #define _____ KC_TRANSPARENT
+#define C_A_D LCA(KC_DEL)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_COLEMAK] = LAYOUT_ortho_4x12(
@@ -74,7 +75,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____
     ),
     [_CTRL] = LAYOUT_ortho_4x12(
-        _____      , CLMK       , DVRK       , QWRT       , KC_NO      , KC_NO      , KC_NO      , KC_NO      , KC_UP      , KC_NO      , KC_PSCR    , KC_PAUSE   ,
+        C_A_D      , CLMK       , DVRK       , QWRT       , KC_NO      , KC_NO      , KC_NO      , KC_NO      , KC_UP      , KC_NO      , KC_PSCR    , KC_PAUSE   ,
         _____      , KC_NO      , KC_NO      , KC_VOLU    , KC_MUTE    , KC_NO      , KC_NO      , KC_LEFT    , KC_DOWN    , KC_RGHT    , KC_NO      , _____      ,
         _____      , KC_NO      , KC_MPRV    , KC_VOLD    , KC_MNXT    , KC_NO      , KC_NO      , KC_NO      , KC_NO      , KC_NO      , KC_NO      , _____      ,
         _____      , _____      , _____      , _____      , NUMPAD     , KC_MPLY    , KC_MPLY    , _____      , _____      , _____      , _____      , _____
