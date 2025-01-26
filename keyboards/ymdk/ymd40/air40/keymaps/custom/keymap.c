@@ -20,6 +20,7 @@ enum layer_names {
   _COLEMAK,
   _DVORAK,
   _QWERTY,
+  _GAMING,
   _FSYM,
   _NUMNAV,
   _ADJUST,
@@ -34,6 +35,7 @@ enum layer_names {
 #define CLMK DF(_COLEMAK)
 #define DVRK DF(_DVORAK)
 #define QWRT DF(_QWERTY)
+#define GAME DF(_GAMING)
 #define _____ KC_TRANSPARENT
 #define C_A_D LCA(KC_DEL)
 
@@ -56,6 +58,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LSFT    , KC_Z       , KC_X       , KC_C       , KC_V       , KC_B       , KC_N       , KC_M       , KC_COMM    , KC_DOT     , KC_SLSH    , KC_RSFT    ,
         KC_LCTL    , KC_LGUI    , KC_LALT    , KC_TAB     , NUMNAV     , KC_SPC     , KC_SPC     , FSYM       , KC_GRAVE   , KC_RALT    , KC_RGUI    , KC_RCTL
         ),
+    [_GAMING] = LAYOUT_ortho_4x12(
+        KC_TAB     , KC_Q       , KC_W       , KC_E       , KC_R       , KC_T       , KC_Y       , KC_U       , KC_I       , KC_O       , KC_P       , KC_BSPC    ,
+        KC_CAPS    , KC_A       , KC_S       , KC_D       , KC_F       , KC_G       , KC_H       , KC_J       , KC_K       , KC_L       , KC_SCLN    , KC_ENT     ,
+        KC_LSFT    , KC_Z       , KC_X       , KC_C       , KC_V       , KC_B       , KC_N       , KC_M       , KC_COMM    , KC_DOT     , KC_SLSH    , KC_ESC     ,
+        KC_LCTL    , KC_LCTL    , KC_LALT    , KC_LALT    , KC_SPC     , KC_SPC     , NUMNAV     , FSYM       , KC_GRAVE   , KC_RALT    , KC_RGUI    , CTL_LYR
+        ),
     [_FSYM] = LAYOUT_ortho_4x12(
         _____      , KC_EXLM    , KC_AT      , KC_HASH    , KC_DLR     , KC_PERC    , KC_CIRC    , KC_AMPR    , KC_ASTR    , KC_LPRN    , KC_RPRN    , KC_BSLS    ,
         _____      , KC_F1      , KC_F2      , KC_F3      , KC_F4      , KC_F5      , KC_F6      , KC_UNDS    , KC_PLUS    , KC_LCBR    , KC_RCBR    , KC_QUOTE   ,
@@ -75,7 +83,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____
     ),
     [_CTRL] = LAYOUT_ortho_4x12(
-        C_A_D      , CLMK       , DVRK       , QWRT       , KC_NO      , KC_NO      , KC_NO      , KC_NO      , KC_UP      , KC_NO      , KC_PSCR    , KC_PAUSE   ,
+        C_A_D      , CLMK       , DVRK       , QWRT       , GAME       , KC_NO      , KC_NO      , KC_NO      , KC_UP      , KC_NO      , KC_PSCR    , KC_PAUSE   ,
         _____      , KC_NO      , KC_NO      , KC_VOLU    , KC_MUTE    , KC_NO      , KC_NO      , KC_LEFT    , KC_DOWN    , KC_RGHT    , KC_NO      , _____      ,
         _____      , KC_NO      , KC_MPRV    , KC_VOLD    , KC_MNXT    , KC_NO      , KC_NO      , KC_NO      , KC_NO      , KC_NO      , KC_NO      , _____      ,
         _____      , _____      , _____      , _____      , NUMPAD     , KC_MPLY    , KC_MPLY    , _____      , _____      , _____      , _____      , _____
