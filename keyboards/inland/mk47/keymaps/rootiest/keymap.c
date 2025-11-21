@@ -17,7 +17,7 @@
 #include QMK_KEYBOARD_H
 #include "raw_hid.h"
 #include "print.h"
-#include "muse.h"
+//#include "rgblight.h"
 
 /*
  * Define keyboard name to be used by UI.
@@ -51,13 +51,12 @@ enum custom_layers {
 #define UC_DEG UC(0x00B0)   // °
 #define UC_DEGF UC(0x2109)  // ℉
 
-// Time (ms) to wait between frames for the wake rgb animation
-#define WAKE_ANIMATION_TIMER_FREQUENCY 50
 
 // Is a display connected
 // #define USING_OLED_DISPLAY false
 
 // wait DELAY ms before unregistering media keys
+#undef TAP_CODE_DELAY
 #define TAP_CODE_DELAY 10
 
 // Modifier remover
@@ -67,39 +66,6 @@ enum custom_layers {
         clear_mods();                          \
         {__VA_ARGS__} set_mods(_real_mods);    \
     } while (0)
-
-// A whole boatload of audio "songs" defined for use by the keyboard
-#ifdef AUDIO_ENABLE
-float planck_song[][2]    = SONG(PLANCK_SOUND);
-float hello_song[][2]     = SONG(ONE_UP_SOUND2);
-float bye_song[][2]       = SONG(GOODBYE_SOUND);
-float num_song[][2]       = SONG(DVORAK_SOUND);
-float qwerty_song[][2]    = SONG(QWERTY_SOUND);
-float colemak_song[][2]   = SONG(COLEMAK_SOUND);
-float dvorak_song[][2]    = SONG(DVORAK_SOUND);
-float funk_song[][2]      = SONG(COLEMAK_SOUND);
-float workman_song[][2]   = SONG(WORKMAN_SOUND);
-float term_song[][2]      = SONG(TERMINAL_SOUND);
-float lover_song[][2]     = SONG(PLOVER_SOUND);
-float ode_song[][2]       = SONG(ODE_TO_JOY);
-float rock_song[][2]      = SONG(ROCK_A_BYE_BABY);
-float clue_song[][2]      = SONG(CLUEBOARD_SOUND);
-float camp_song[][2]      = SONG(CAMPANELLA);
-float imp_march_song[][2] = SONG(IMPERIAL_MARCH);
-float gameover_song[][2]  = SONG(MARIO_GAMEOVER);
-float puzzle_song[][2]    = SONG(ZELDA_PUZZLE2);
-float caps_on[][2]        = SONG(CAPS_LOCK_ON_SOUND);
-float caps_off[][2]       = SONG(CAPS_LOCK_OFF_SOUND);
-float slctl_on[][2]       = SONG(SCROLL_LOCK_ON_SOUND);
-float slctl_off[][2]      = SONG(SCROLL_LOCK_OFF_SOUND);
-float slalt_on[][2]       = SONG(NUM_LOCK_ON_SOUND);
-float slalt_off[][2]      = SONG(NUM_LOCK_OFF_SOUND);
-float leader_started[][2] = SONG(LEAD_START_SOUND);
-float leader_succeed[][2] = SONG(LEAD_SUCCESS_SOUND);
-float leader_fail[][2]    = SONG(LEAD_FAIL_SOUND);
-float plover_song[][2]    = SONG(PLOVER_SOUND);
-float plover_gb_song[][2] = SONG(PLOVER_GOODBYE_SOUND);
-#endif
 
 // Declare stored memory config
 typedef union {
@@ -206,11 +172,8 @@ typedef struct {
 // Whether or not to do the wake animation+sound
 bool do_wake_animation;
 
-// Variable to keep track of the rgb mode assigned by the RGB_CON key
-static uint8_t rgbcon_tracker = 0;
-
 // Used by the on-board WPM tracker
-char wpm_str[12];
+char wpm_str[17];
 
 // Variables used for the alt-tab key
 bool     is_alt_tab_active = false;
@@ -224,9 +187,6 @@ bool     irony_shifted = false;
 char     irony_str[4]  = "⸮";
 char     bang_str[4]   = "‽";
 
-// Variables used for the rgb wakeup animation
-static uint16_t wake_rgb_timer;
-static uint8_t  wake_rgb_count = 0;
 bool            waking_up      = false;
 bool            do_wake_audio  = false;
 
@@ -254,19 +214,6 @@ void       slalt_reset(tap_dance_state_t* state, void* user_data);
 bool       lctl_sticky = false;
 bool       lalt_sticky = false;
 
-// This function is called when lock indicators (caps-lock led) are changed/toggled/updated
-bool led_update_user(led_t led_state) {
-    rgblight_set_layer_state(10, led_state.caps_lock);
-#ifdef AUDIO_ENABLE
-    static uint8_t caps_state = 0;
-    if (caps_state != led_state.caps_lock) {
-        // When the caps-lock led state changes play sounds
-        led_state.caps_lock ? PLAY_SONG(caps_on) : PLAY_SONG(caps_off);
-        caps_state = led_state.caps_lock;
-    }
-#endif
-    return true;
-}
 
 // Define key layout/layers
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                                             // Define all the layers
@@ -308,7 +255,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
 
     [_DVORAK] = LAYOUT_planck_mit(                                                                    //
         QK_GESC, KC_QUOT, KC_COMM, KC_DOT, KC_P, KC_Y, KC_F, KC_G, KC_C, KC_R, KC_L, KC_BSPC,         //
-        LT(_TABULA, KC_TAB), KC_A, KC_O, KC_E, KC_U, KC_I, KC_D, KC_H, KC_T, KC_TRNS, KC_S, KC_SLSH,  //
+        LT(_TABULA, KC_TAB), KC_A, KC_O, KC_E, KC_U, KC_I, KC_D, KC_H, KC_T, KC_N, KC_S, KC_SLSH,  //
         TD(TD_LSHFT_CAPS), KC_SCLN, KC_Q, KC_J, KC_K, KC_X, KC_B, KC_M, KC_W, KC_V, KC_Z, SC_SENT,    //
         TD(TD_LCTL_STICKY), QK_LEAD, KC_LGUI, TD(TD_LALT_STICKY), MO(_SYMBLS), KC_SPC, MO(_NUMBRS), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT),
     /* Dvorak Layer [2]
@@ -445,35 +392,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
  * `-----------------------------------------------------------------------------------'
  */
 
-// Define RGB layers | assign leds and their values for each rgb layer
-const rgblight_segment_t PROGMEM my_warning_layer[]  = RGBLIGHT_LAYER_SEGMENTS({1, 9, HSV_RED}, {0, 1, HSV_RED});
-const rgblight_segment_t PROGMEM my_allgood_layer[]  = RGBLIGHT_LAYER_SEGMENTS({1, 9, HSV_GREEN}, {0, 1, HSV_GREEN});
-const rgblight_segment_t PROGMEM my_capslock_layer[] = RGBLIGHT_LAYER_SEGMENTS({1, 1, HSV_RED}, {8, 1, HSV_RED});
-const rgblight_segment_t PROGMEM my_number_layer[]   = RGBLIGHT_LAYER_SEGMENTS({1, 1, HSV_MAGENTA}, {8, 1, HSV_MAGENTA});
-const rgblight_segment_t PROGMEM my_symbol_layer[]   = RGBLIGHT_LAYER_SEGMENTS({1, 1, HSV_GREEN}, {8, 1, HSV_GREEN});
-const rgblight_segment_t PROGMEM my_tabula_layer[]   = RGBLIGHT_LAYER_SEGMENTS({3, 4, HSV_CORAL}, {1, 1, HSV_CORAL}, {8, 1, HSV_CORAL});
-const rgblight_segment_t PROGMEM my_mousy_layer[]    = RGBLIGHT_LAYER_SEGMENTS({3, 4, HSV_TURQUOISE}, {1, 1, HSV_TURQUOISE}, {8, 1, HSV_TURQUOISE}, {7, 1, HSV_MAGENTA});
-const rgblight_segment_t PROGMEM my_numpad_layer[]   = RGBLIGHT_LAYER_SEGMENTS({3, 4, HSV_GOLD}, {1, 1, HSV_GOLD}, {8, 1, HSV_GOLD}, {7, 1, HSV_BLUE});
-const rgblight_segment_t PROGMEM my_features_layer[] = RGBLIGHT_LAYER_SEGMENTS({3, 4, HSV_BLUE}, {1, 1, HSV_BLUE}, {8, 1, HSV_BLUE});
-const rgblight_segment_t PROGMEM my_base_layer[]     = RGBLIGHT_LAYER_SEGMENTS({0, 0, HSV_BLACK});
-const rgblight_segment_t PROGMEM my_colemak_layer[]  = RGBLIGHT_LAYER_SEGMENTS({1, 1, HSV_GREEN});
-const rgblight_segment_t PROGMEM my_dvorak_layer[]   = RGBLIGHT_LAYER_SEGMENTS({1, 1, HSV_ORANGE});
-const rgblight_segment_t PROGMEM my_plover_layer[]   = RGBLIGHT_LAYER_SEGMENTS({1, 1, HSV_GOLD});
-
-// Define the array of rgb layers. Later layers take precedence
-const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(my_base_layer,      // Base Layer
-                                                                               my_colemak_layer,   // Overrides previous layer
-                                                                               my_dvorak_layer,    // Overrides previous layers
-                                                                               my_symbol_layer,    // Overrides previous layers
-                                                                               my_number_layer,    // ...etc                                                                              my_features_layer,  // Overrides  layers
-                                                                               my_plover_layer,    //
-                                                                               my_features_layer,  //
-                                                                               my_numpad_layer,    //
-                                                                               my_tabula_layer,    //
-                                                                               my_mousy_layer,     //
-                                                                               my_capslock_layer,  //
-                                                                               my_warning_layer,   //
-                                                                               my_allgood_layer);  // CapsLock Layer);
 
 // Configure encoders
 bool encoder_update_user(uint8_t index, bool clockwise) {
@@ -629,39 +547,29 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
 
 // Runs every time a key is pressed or released
 bool process_record_user(uint16_t keycode, keyrecord_t* record) {
-#ifdef CONSOLE_ENABLE
-    dprintf("KL: kc: 0x%04X, col: %u, row: %u, pressed: %b, time: %u, interrupt: %b, count: %u\n", keycode, record->event.key.col, record->event.key.row, record->event.pressed, record->event.time, record->tap.interrupted, record->tap.count);
-#endif
     // Store the current modifier state in the variable for later reference
     mod_state = get_mods();
     switch (keycode) {
         case QWERTY:
             if (record->event.pressed) {
                 set_single_persistent_default_layer(_QWERTY);
-                PLAY_SONG(qwerty_song);
             }
             return false;
             break;
         case COLEMAK:
             if (record->event.pressed) {
                 set_single_persistent_default_layer(_COLEMAK);
-                PLAY_SONG(colemak_song);
             }
             return false;
             break;
         case DVORAK:
             if (record->event.pressed) {
                 set_single_persistent_default_layer(_DVORAK);
-                PLAY_SONG(dvorak_song);
             }
             return false;
             break;
         case PLOVER:
             if (record->event.pressed) {
-#ifdef AUDIO_ENABLE
-                stop_all_notes();
-                PLAY_SONG(plover_song);
-#endif
                 layer_off(_RAISE);
                 layer_off(_LOWER);
                 layer_off(_ADJUST);
@@ -677,9 +585,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
             break;
         case EXT_PLV:
             if (record->event.pressed) {
-#ifdef AUDIO_ENABLE
-                PLAY_SONG(plover_gb_song);
-#endif
                 layer_off(_PLOVER);
             }
             return false;
@@ -959,9 +864,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
                 }
                 alt_tab_timer = timer_read();
                 register_code(KC_TAB);
-#ifdef CONSOLE_ENABLE
-                dprint("I've tabbed to another window!\n");
-#endif
             } else {
                 unregister_code(KC_TAB);
             }
@@ -998,10 +900,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
 
         case DO_RESET:  // Reset button with LED indication
             if (record->event.pressed) {
-                rgblight_set_effect_range(0, 9);
-                rgblight_sethsv_noeeprom(HSV_RED);
-                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-                rgblight_blink_layer(11, 5000);
                 reset_keyboard();
             }
             break;
@@ -1011,11 +909,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
                 eeconfig_update_user(user_config.raw);  // Writes the new status to EEPROM
                 if (user_config.do_wakeup_animation) {
                     print("Wake animation enabled.\n");
-                    PLAY_SONG(slctl_on);
 
                 } else {
                     print("Wake animation disabled.\n");
-                    PLAY_SONG(slctl_off);
                 }
             }
             break;
@@ -1025,11 +921,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
                 eeconfig_update_user(user_config.raw);  // Writes the new status to EEPROM
                 if (user_config.do_wakeup_audio) {
                     print("Wake music enabled.\n");
-                    PLAY_SONG(slctl_on);
 
                 } else {
                     print("Wake music disabled.\n");
-                    PLAY_SONG(slctl_off);
                 }
             }
             break;
@@ -1055,36 +949,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
             return false;
         case TG(_NUMPD):  // Toggle the NumPad layer
             if (record->event.pressed) {
-#ifdef AUDIO_ENABLE
-                PLAY_SONG(hello_song);
-#endif
                 print("I've activated the NumPad!\n");
             } else {
             }
             break;
         case TG(_TABULA):  // Toggle the Tabula layer
             if (record->event.pressed) {
-#ifdef AUDIO_ENABLE
-                PLAY_SONG(lover_song);
-#endif
                 print("I've activated Tabular!\n");
             } else {
             }
             break;
         case TG(_MOUSY):  // Toggle the MouseyPad layer
             if (record->event.pressed) {
-#ifdef AUDIO_ENABLE
-                PLAY_SONG(funk_song);
-#endif
                 print("I've activated the MousePad!\n");
             } else {
             }
             break;
         case TO(_BASE):  // Return to the base layer
             if (record->event.pressed) {
-#ifdef AUDIO_ENABLE
-                PLAY_SONG(planck_song);
-#endif
                 print("I've returned to the Base Layer!\n");
             } else {
             }
@@ -1094,73 +976,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
             printf("%s\n", wpm_str);
             break;
 
-        case MY_RGBCON:  // Cycles through custom RGB animation presets
-            if (record->event.pressed) {
-                // when keycode RGB-CON is pressed
-                user_config.rgbcon_tracker = rgbcon_tracker + 1;  // Toggles the status
-                eeconfig_update_user(user_config.raw);
-                switch (rgbcon_tracker) {
-                    case 0:
-                        rgblight_set_effect_range(0, 9);
-                        rgblight_sethsv(HSV_BLACK);
-                        rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
-                        print("Changed RGB mode to: Disabled RGB\n");
-                        rgbcon_tracker++;
-                        break;
-                    case 1:
-                        rgblight_set_effect_range(0, 9);
-                        rgblight_sethsv(HSV_WHITE);
-                        rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
-                        print("Changed RGB mode to: Static White\n");
-                        rgbcon_tracker++;
-                        break;
-                    case 2:
-                        rgblight_set_effect_range(0, 9);
-                        rgblight_sethsv(HSV_CYAN);
-                        rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
-                        print("Changed RGB mode to: Static Cyan\n");
-                        rgbcon_tracker++;
-                        break;
-                    case 3:
-                        rgblight_set_effect_range(0, 9);
-                        rgblight_sethsv(HSV_WHITE);
-                        rgblight_mode(RGBLIGHT_MODE_BREATHING);
-                        print("Changed RGB mode to: Breathing Lights\n");
-#ifdef AUDIO_ENABLE
-                        print("Played Marching song!\n");
-                        PLAY_SONG(imp_march_song);
-#endif
-                        rgbcon_tracker++;
-                        break;
-                    case 4:
-                        rgblight_set_effect_range(0, 9);
-                        rgblight_sethsv(HSV_RED);
-                        rgblight_mode(RGBLIGHT_MODE_RAINBOW_SWIRL);
-                        print("Changed RGB mode to: Rainbow Swirl\n");
-                        rgbcon_tracker++;
-                        break;
-                    case 5:
-                        rgblight_set_effect_range(0, 9);
-                        rgblight_sethsv(HSV_CYAN);
-                        rgblight_mode(RGBLIGHT_MODE_RAINBOW_MOOD);
-                        print("Changed RGB mode to: Rainbow Mood\n");
-#ifdef AUDIO_ENABLE
-                        print("Played Game Over song!\n");
-                        PLAY_SONG(gameover_song);
-#endif
-                        rgbcon_tracker = 0;
-                        break;
-                    case 6:
-                        rgblight_set_effect_range(0, 9);
-                        rgblight_sethsv(HSV_BLACK);
-                        rgblight_mode(RGBLIGHT_MODE_STATIC_LIGHT);
-                        print("Changed RGB mode to: Disabled RGB\n");
-                        rgbcon_tracker = 1;
-                        break;
-                }
-            } else {
-            }
-            break;
     }
     return true;
 };
@@ -1170,156 +985,14 @@ void post_process_record_user(uint16_t keycode, keyrecord_t* record) {
     switch (keycode) {
         case QK_DEBUG_TOGGLE:
             // Blink the warning layer when the debug key is pressed
-            rgblight_blink_layer_repeat(debug_enable ? 11 : 12, 1500, 3);
-
             // Update the console with the debug mode status
             if (debug_enable) {
                 print("Debug mode enabled.\n");
-                PLAY_SONG(slctl_on);
 
             } else {
                 print("Debug mode disabled.\n");
-                PLAY_SONG(slctl_off);
             }
             break;
-    }
-}
-
-// RGB Default Layer assignments
-layer_state_t default_layer_state_set_user(layer_state_t state) {
-    state = update_tri_layer_state(state, _SYMBLS, _NUMBRS, _FEATURS);
-
-    // Sets the default RGB layer states
-    rgblight_set_layer_state(0, layer_state_cmp(state, _BASE));
-    rgblight_set_layer_state(1, layer_state_cmp(state, _COLEMAK));
-    rgblight_set_layer_state(2, layer_state_cmp(state, _DVORAK));
-    return state;
-}
-
-// RGB Layer assignments
-layer_state_t layer_state_set_user(layer_state_t state) {
-    state = update_tri_layer_state(state, _SYMBLS, _NUMBRS, _FEATURS);
-
-    // Sets the RGB layer states
-    rgblight_set_layer_state(5, layer_state_cmp(state, _PLOVER));
-    rgblight_set_layer_state(6, layer_state_cmp(state, _FEATURS));
-    rgblight_set_layer_state(3, layer_state_cmp(state, _SYMBLS));
-    rgblight_set_layer_state(4, layer_state_cmp(state, _NUMBRS));
-    rgblight_set_layer_state(7, layer_state_cmp(state, _NUMPD));
-    rgblight_set_layer_state(8, layer_state_cmp(state, _TABULA));
-    rgblight_set_layer_state(9, layer_state_cmp(state, _MOUSY));
-    return state;
-}
-
-// Runs the wakeup rgb animation + music
-void rgb_wakeup_sequence(void) {
-    if (waking_up) {
-        if ((timer_elapsed(wake_rgb_timer) > WAKE_ANIMATION_TIMER_FREQUENCY)) {
-            if (wake_rgb_count < 1) {
-                rgblight_sethsv_noeeprom(HSV_OFF);
-                rgblight_set_effect_range(0, 9);
-            } else if (wake_rgb_count < 2 && wake_rgb_count > 0) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 2);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(2, 9);
-            } else if (wake_rgb_count < 3 && wake_rgb_count > 1) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 2);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(2, 9);
-            } else if (wake_rgb_count < 4 && wake_rgb_count > 2) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 3);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(3, 9);
-            } else if (wake_rgb_count < 5 && wake_rgb_count > 3) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 4);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(4, 9);
-            } else if (wake_rgb_count < 6 && wake_rgb_count > 4) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 5);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(5, 9);
-            } else if (wake_rgb_count < 7 && wake_rgb_count > 5) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 6);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(6, 9);
-            } else if (wake_rgb_count < 8 && wake_rgb_count > 6) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 7);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(7, 9);
-            } else if (wake_rgb_count < 9 && wake_rgb_count > 7) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 8);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(8, 9);
-            } else if (wake_rgb_count < 10 && wake_rgb_count > 8) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 0);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(0, 9);
-            } else if (wake_rgb_count < 11 && wake_rgb_count > 9) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 8);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(8, 9);
-            } else if (wake_rgb_count < 12 && wake_rgb_count > 10) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 7);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(7, 9);
-            } else if (wake_rgb_count < 13 && wake_rgb_count > 11) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 6);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(6, 9);
-            } else if (wake_rgb_count < 14 && wake_rgb_count > 12) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 5);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(5, 9);
-            } else if (wake_rgb_count < 15 && wake_rgb_count > 13) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 4);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(4, 9);
-            } else if (wake_rgb_count < 16 && wake_rgb_count > 14) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 3);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(3, 9);
-            } else if (wake_rgb_count < 17 && wake_rgb_count > 15) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 2);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(2, 9);
-            } else if (wake_rgb_count < 18 && wake_rgb_count > 16) {
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 1);
-                rgblight_sethsv_noeeprom(HSV_WHITE);
-                rgblight_set_effect_range(1, 9);
-            } else if (wake_rgb_count > 17) {
-                // Final frame of wake-up rgb animation
-                rgblight_sethsv_noeeprom(HSV_BLACK);
-                rgblight_set_effect_range(0, 9);
-                waking_up = false;
-                print("I have awoken!\n");
-#ifdef AUDIO_ENABLE
-                // Play the wake-up sound *after* we finish the animation
-                if (do_wake_audio) {
-                    PLAY_SONG(puzzle_song);
-                }
-#endif
-            }
-            rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-            wake_rgb_count++;
-            wake_rgb_timer = timer_read();
-        }
     }
 }
 
@@ -1388,11 +1061,6 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t* record) {
  * by playing sound at different stages of the leader chord
  */
 // Called when you tap the Leader key
-void leader_start_user(void) {
-#ifdef AUDIO_ENABLE
-    PLAY_SONG(leader_started);
-#endif
-}
 // Called when either the leader sequence is completed, or the leader timeout is hit
 void leader_end_user(void) {
     did_leader_succeed = false;
@@ -1469,16 +1137,6 @@ void leader_end_user(void) {
         send_unicode_string("⛵");
         did_leader_succeed = true;
     }
-
-    if (did_leader_succeed) {
-#ifdef AUDIO_ENABLE
-        PLAY_SONG(leader_succeed);
-#endif
-    } else {
-#ifdef AUDIO_ENABLE
-        PLAY_SONG(leader_fail);
-#endif
-    }
 }
 
 // Monitors and labels the current state of any tap-dances
@@ -1553,14 +1211,12 @@ void slctl_finished(tap_dance_state_t* state, void* user_data) {
             if (lctl_sticky) {
                 unregister_code(KC_LCTL);
                 lctl_sticky = false;
-                PLAY_SONG(slctl_off);
                 reset_tap_dance(state);
                 break;
             } else {
                 if ((state->count) >= TAPPING_TOGGLE) {
                     register_code(KC_LCTL);
                     lctl_sticky = true;
-                    PLAY_SONG(slctl_on);
                     reset_tap_dance(state);
                     break;
                 } else {
@@ -1593,14 +1249,12 @@ void slalt_finished(tap_dance_state_t* state, void* user_data) {
             if (lalt_sticky) {
                 unregister_code(KC_LALT);
                 lalt_sticky = false;
-                PLAY_SONG(slalt_off);
                 reset_tap_dance(state);
                 break;
             } else {
                 if ((state->count) >= TAPPING_TOGGLE) {
                     register_code(KC_LALT);
                     lalt_sticky = true;
-                    PLAY_SONG(slalt_on);
                     reset_tap_dance(state);
                     break;
                 } else {
@@ -1744,63 +1398,9 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
-// Dip-Switch controls
-void dip_switch_update_user(uint8_t index, bool active) {
-    switch (index) {
-        case 0: {
-#ifdef AUDIO_ENABLE
-            static bool play_sound = false;
-#endif
-            if (active) {
-#ifdef AUDIO_ENABLE
-                if (play_sound) {
-                    PLAY_SONG(plover_song);
-                }
-#endif
-                layer_on(_ADJUST);
-            } else {
-#ifdef AUDIO_ENABLE
-                if (play_sound) {
-                    PLAY_SONG(plover_gb_song);
-                }
-#endif
-                layer_off(_ADJUST);
-            }
-#ifdef AUDIO_ENABLE
-            play_sound = true;
-#endif
-            break;
-        }
-        case 1:
-            if (active) {
-                muse_mode = true;
-            } else {
-                muse_mode = false;
-            }
-    }
-}
-
 // Runs at every complete matrix scan
 void matrix_scan_user(void) {
     // Some code for controlling MIDI output
-#ifdef AUDIO_ENABLE
-    if (muse_mode) {
-        if (muse_counter == 0) {
-            uint8_t muse_note = muse_offset + SCALE[muse_clock_pulse()];
-            if (muse_note != last_muse_note) {
-                stop_note(compute_freq_for_midi_note(last_muse_note));
-                play_note(compute_freq_for_midi_note(muse_note), 0xF);
-                last_muse_note = muse_note;
-            }
-        }
-        muse_counter = (muse_counter + 1) % muse_tempo;
-    } else {
-        if (muse_counter) {
-            stop_all_notes();
-            muse_counter = 0;
-        }
-    }
-#endif
     // Check the shift-state and hold-time for the Irony key
     if (irony_active) {
         if ((get_mods() & MOD_MASK_SHIFT)) {
@@ -1825,9 +1425,6 @@ void matrix_scan_user(void) {
         }
     }
     // Run the wake-up RGB animation if performing wake-up
-    if (do_wake_animation) {
-        rgb_wakeup_sequence();
-    }
 }
 
 // Music mask controls
@@ -1858,7 +1455,6 @@ void keyboard_post_init_user(void) {
     user_config.raw   = eeconfig_read_user();
     do_wake_animation = user_config.do_wakeup_animation;
     do_wake_audio     = user_config.do_wakeup_audio;
-    rgbcon_tracker    = user_config.rgbcon_tracker;
 
     // Tell the console the status of saved config
     if (user_config.do_wakeup_animation) {
@@ -1871,36 +1467,6 @@ void keyboard_post_init_user(void) {
     } else {
         print("Wake music disabled.\n");
     }
-    switch (user_config.rgbcon_tracker) {
-        case 2:
-            print("RGB mode: Static White\n");
-            break;
-        case 3:
-            print("RGB mode: Static Cyan\n");
-            break;
-        case 4:
-            print("RGB mode: Breathing Lights\n");
-            break;
-        case 5:
-            print("RGB mode: Rainbow Swirl\n");
-            break;
-        case 6:
-            print("RGB mode: Rainbow Mood\n");
-            break;
-        default:
-            print("RGB mode: Disabled RGB\n");
-            break;
-    }
-
-    // Enable the LED layers
-    rgblight_enable_noeeprom();  // Enables RGB, without saving settings
-    rgblight_layers = my_rgb_layers;
-
-    /*
-     * Initialize the LED crawl wake animation here
-     * To perform it on just the first wake
-     */
-    wake_rgb_timer = timer_read();
     waking_up      = true;
 
     // Initialize OLED display
@@ -1918,14 +1484,14 @@ void eeconfig_init_user(void) {
     eeconfig_update_user(user_config.raw);  // Write default value to EEPROM now
 }
 
+layer_state_t layer_state_set_user(layer_state_t state) {
+    return update_tri_layer_state(state, _SYMBLS, _NUMBRS, _FEATURS);
+}
+
 // Communicate 2-way with host via HID_RAW
 #ifdef RAW_ENABLE
 void raw_hid_receive(uint8_t* data, uint8_t length) {
     //  Sample code below simply echoes back to the console any data received by the raw_hid process
 
-#    ifdef CONSOLE_ENABLE
-    dprint("Received USB data from host system:\n");
-    dprintf("%s\n", data);
-#    endif
 }
 #endif
