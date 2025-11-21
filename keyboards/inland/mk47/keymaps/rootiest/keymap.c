@@ -324,10 +324,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
      */
 
     [_FEATURS] = LAYOUT_planck_mit(                                                                                                         //
-        LCTL(LALT(KC_DEL)), DO_RESET, DB_TOGG, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, TD(TD_DEG_DEGF), TD(TD_SMILEY), KC_DEL,  //
+        LCA(KC_DEL), DO_RESET, DB_TOGG, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, TD(TD_DEG_DEGF), TD(TD_SMILEY), KC_DEL,  //
         RGB_VAI, RGB_VAD, KC_TRNS, KC_TRNS, KC_TRNS, AG_NORM, AG_SWAP, DF(_BASE), DF(_COLEMAK), DF(_DVORAK), TO(_PLOVER), MY_RGBCON,            //
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, CK_ON, CK_OFF, KC_ENTER,                                  //
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, TG(_MOUSY), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
+        QK_BOOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, TG(_MOUSY), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
     /*
     Special Features Layer [6]
     * ,-----------------------------------------------------------------------------------.
