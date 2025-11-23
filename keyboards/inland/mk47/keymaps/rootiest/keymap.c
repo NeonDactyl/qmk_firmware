@@ -121,13 +121,6 @@ enum custom_keycodes {
     KC_PRVTAB,
 };
 
-// Declare unicode map array
-enum unicode_names { BANG, SNEK };
-const uint32_t unicode_map[] PROGMEM = {
-    //[UCD_BANG]  = 0x203D,   // ‽
-    //[UCD_IRONY] = 0x2E2E,   // ⸮
-    [SNEK] = 0x1F40D,  // 🐍
-};
 
 enum combo_events { ZC_COPY, XV_PASTE };
 
@@ -142,10 +135,10 @@ combo_t key_combos[] = {
 // Tap Dance key declarations
 enum {
     TD_DEG_DEGF,
-    TD_SMILEY,
-    TD_LSHFT_CAPS,
-    TD_LCTL_STICKY,
-    TD_LALT_STICKY,
+    // TD_SMILEY,
+    // TD_LSHFT_CAPS,
+    // TD_LCTL_STICKY,
+    // TD_LALT_STICKY,
     TD_LOWER,
     TD_RAISE,
 };
@@ -203,25 +196,25 @@ bool did_leader_succeed;
 
 // Tap-Dance stuffs, initializing functions that are coded further below
 td_state_t cur_dance(tap_dance_state_t* state);
-void       sml_finished(tap_dance_state_t* state, void* user_data);
-void       sml_reset(tap_dance_state_t* state, void* user_data);
-void       scap_finished(tap_dance_state_t* state, void* user_data);
-void       scap_reset(tap_dance_state_t* state, void* user_data);
-void       slctl_finished(tap_dance_state_t* state, void* user_data);
-void       slctl_reset(tap_dance_state_t* state, void* user_data);
-void       slalt_finished(tap_dance_state_t* state, void* user_data);
-void       slalt_reset(tap_dance_state_t* state, void* user_data);
-bool       lctl_sticky = false;
-bool       lalt_sticky = false;
+//void       sml_finished(tap_dance_state_t* state, void* user_data);
+//void       sml_reset(tap_dance_state_t* state, void* user_data);
+// void       scap_finished(tap_dance_state_t* state, void* user_data);
+// void       scap_reset(tap_dance_state_t* state, void* user_data);
+// void       slctl_finished(tap_dance_state_t* state, void* user_data);
+// void       slctl_reset(tap_dance_state_t* state, void* user_data);
+// void       slalt_finished(tap_dance_state_t* state, void* user_data);
+// void       slalt_reset(tap_dance_state_t* state, void* user_data);
+// bool       lctl_sticky = false;
+// bool       lalt_sticky = false;
 
 
 // Define key layout/layers
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                                             // Define all the layers
     [_BASE] = LAYOUT_planck_mit(                                                                           //
-        QK_GESC, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSPC,                      //
+        KC_ESC, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_BSPC,                      //
         LT(_TABULA, KC_TAB), KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT,       //
-        TD(TD_LSHFT_CAPS), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, SC_SENT,    //
-        TD(TD_LCTL_STICKY), QK_LEAD, KC_LGUI, TD(TD_LALT_STICKY), MO(_SYMBLS), KC_SPC, MO(_NUMBRS), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT),
+        KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, SC_SENT,    //
+        KC_LCTL, QK_LEAD, KC_LGUI, KC_LALT, MO(_NUMBRS), KC_SPC, MO(_SYMBLS), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT),
     /*
     Base Layer [0]
      * ,-----------------------------------------------------------------------------------.
@@ -236,10 +229,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
     */
 
     [_COLEMAK] = LAYOUT_planck_mit(                                                                        //
-        QK_GESC, KC_Q, KC_W, KC_F, KC_P, KC_G, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSPC,                   //
+        KC_ESC, KC_Q, KC_W, KC_F, KC_P, KC_G, KC_J, KC_L, KC_U, KC_Y, KC_SCLN, KC_BSPC,                   //
         LT(_TABULA, KC_TAB), KC_A, KC_R, KC_S, KC_T, KC_D, KC_H, KC_N, KC_E, KC_I, KC_O, KC_QUOT,          //
-        TD(TD_LSHFT_CAPS), KC_Z, KC_X, KC_C, KC_V, KC_B, KC_K, KC_M, KC_COMM, KC_DOT, KC_SLSH, SC_SENT,    //
-        TD(TD_LCTL_STICKY), QK_LEAD, KC_LGUI, TD(TD_LALT_STICKY), MO(_SYMBLS), KC_SPC, MO(_NUMBRS), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT),
+        KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_K, KC_M, KC_COMM, KC_DOT, KC_SLSH, SC_SENT,    //
+        KC_LCTL, QK_LEAD, KC_LGUI, KC_LALT, MO(_NUMBRS), KC_SPC, MO(_SYMBLS), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT),
     /*
     Colemak Layer [1]
      * ,-----------------------------------------------------------------------------------.
@@ -254,10 +247,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
     */
 
     [_DVORAK] = LAYOUT_planck_mit(                                                                    //
-        QK_GESC, KC_QUOT, KC_COMM, KC_DOT, KC_P, KC_Y, KC_F, KC_G, KC_C, KC_R, KC_L, KC_BSPC,         //
+        KC_ESC, KC_QUOT, KC_COMM, KC_DOT, KC_P, KC_Y, KC_F, KC_G, KC_C, KC_R, KC_L, KC_BSPC,         //
         LT(_TABULA, KC_TAB), KC_A, KC_O, KC_E, KC_U, KC_I, KC_D, KC_H, KC_T, KC_N, KC_S, KC_SLSH,  //
-        TD(TD_LSHFT_CAPS), KC_SCLN, KC_Q, KC_J, KC_K, KC_X, KC_B, KC_M, KC_W, KC_V, KC_Z, SC_SENT,    //
-        TD(TD_LCTL_STICKY), QK_LEAD, KC_LGUI, TD(TD_LALT_STICKY), MO(_SYMBLS), KC_SPC, MO(_NUMBRS), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT),
+        KC_LSFT, KC_SCLN, KC_Q, KC_J, KC_K, KC_X, KC_B, KC_M, KC_W, KC_V, KC_Z, SC_SENT,    //
+        KC_LCTL, QK_LEAD, KC_LGUI, KC_LALT, MO(_NUMBRS), KC_SPC, MO(_SYMBLS), KC_LEFT, KC_DOWN, KC_UP, KC_RGHT),
     /* Dvorak Layer [2]
      * ,-----------------------------------------------------------------------------------.
      * |Gr/ESC|   "  |   ,  |   .  |   P  |   Y  |   F  |   G  |   C  |   R  |   L  | Bksp |
@@ -273,7 +266,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
         KC_MPLY, KC_EXLM, KC_AT, KC_HASH, KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_BSPC,       //
         KC_DEL, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE,                 //
         KC_TRNS, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, LSFT(KC_LCTL), LSFT(KC_LCTL), KC_HOME, KC_END, KC_TRNS,  //
-        TG(_NUMPD), KC_TRNS, KC_TRNS, KC_TRNS, TO(_BASE), KC_TRNS, KC_TRNS, KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY),
+        TG(_NUMPD), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, TO(_BASE), KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY),
     /*
     Symbols Layer [3]
     * ,-----------------------------------------------------------------------------------.
@@ -288,10 +281,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
     */
 
     [_NUMBRS] = LAYOUT_planck_mit(                                                                          //
-        KC_MPLY, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSPC,                       //
-        KC_DEL, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_MINS, KC_EQL, KC_LBRC, KC_RBRC, KC_BSLS,       //
-        KC_TRNS, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, KC_NUHS, KC_NUBS, KC_PGUP, KC_PGDN, KC_TRNS,  //
-        TG(_NUMPD), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, TO(_BASE), KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY),
+        KC_PSCR, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_BSPC,                       //
+        KC_DEL, KC_TRNS, KC_INS, KC_HOME, KC_PGUP, KC_TRNS, KC_TRNS, KC_MINS, KC_EQL, KC_LBRC, KC_RBRC, KC_BSLS,       //
+        KC_TRNS, KC_TRNS, KC_DEL, KC_END, KC_PGDN, KC_TRNS, KC_TRNS, KC_NUHS, KC_NUBS, KC_GRV, KC_TRNS, KC_TRNS,  //
+        TG(_NUMPD), KC_TRNS, KC_TRNS, KC_TRNS, TO(_BASE), KC_MPLY, KC_TRNS, KC_MNXT, KC_VOLD, KC_VOLU, KC_TRNS),
 
     /*
     Numbers Layer [4]
@@ -324,7 +317,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
      */
 
     [_FEATURS] = LAYOUT_planck_mit(                                                                                                         //
-        LCA(KC_DEL), DO_RESET, DB_TOGG, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, TD(TD_DEG_DEGF), TD(TD_SMILEY), KC_DEL,  //
+        LCA(KC_DEL), DO_RESET, DB_TOGG, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, TD(TD_DEG_DEGF), KC_TRNS, KC_DEL,  //
         RGB_VAI, RGB_VAD, KC_TRNS, KC_TRNS, KC_TRNS, AG_NORM, AG_SWAP, DF(_BASE), DF(_COLEMAK), DF(_DVORAK), TO(_PLOVER), MY_RGBCON,            //
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, CK_ON, CK_OFF, KC_ENTER,                                  //
         QK_BOOT, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, TG(_MOUSY), KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS),
@@ -360,7 +353,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
     */
     [_TABULA] = LAYOUT_planck_mit(                                                                                                   //
         KC_ESC, KC_ALTF4, VK_TOGG, PRINT_WPM_KEY, WAKE_ANI_TOG, KC_TRNS, KC_REDO, UC_NEXT, UC_WINC, CG_TOGG, AG_TOGG, KC_DLINE,  //
-        KC_NXTAB, KC_SLCTALL, KC_SAVE, KC_TRNS, KC_FIND, SH_TOGG, SH_TOGG, IRONY, KC_LCUT, KC_LCOPY, KC_TRNS, KC_KILL,                   //
+        KC_NXTAB, KC_SLCTALL, KC_SAVE, KC_TRNS, KC_FIND, SH_TOGG, SH_TOGG, KC_TRNS, KC_LCUT, KC_LCOPY, KC_TRNS, KC_KILL,                   //
         KC_LSFT, KC_UNDO, KC_CUT, KC_COPY, KC_PASTE, KC_PRVWD, KC_NXTWD, TG(_MOUSY), KC_TRNS, KC_HOME, KC_END, SC_SENT,              //
         TO(_BASE), KC_LCTL, KC_LGUI, KC_LALT, SC_LSPO, ALT_TAB, SC_RSPC, KC_PRVWD, KC_BRID, KC_BRIU, KC_NXTWD),
     /* Tabular Layer [8]
@@ -377,7 +370,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
 
     [_MOUSY] = LAYOUT_planck_mit(                                                                                                  //
         KC_ESC, KC_BTN1, KC_MS_U, KC_BTN2, KC_TRNS, KC_TRNS, KC_TRNS, UC_NEXT, UC_WINC, CG_TOGG, AG_TOGG, KC_BSPC,  //
-        KC_TAB, KC_MS_L, KC_MS_D, KC_MS_R, KC_TRNS, KC_TRNS, KC_TRNS, IRONY, VK_TOGG, KC_TRNS, KC_TRNS, KC_TRNS,                   //
+        KC_TAB, KC_MS_L, KC_MS_D, KC_MS_R, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, VK_TOGG, KC_TRNS, KC_TRNS, KC_TRNS,                   //
         KC_LSFT, KC_UNDO, KC_CUT, KC_COPY, KC_PASTE, KC_PRVWD, KC_NXTWD, KC_TRNS, KC_HOME, KC_BTN3, KC_END, SC_SENT,               //
         TO(_BASE), KC_LCTL, KC_LGUI, KC_LALT, KC_BTN1, ALT_TAB, KC_BTN2, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R)};
 /* MousePad Layer [9]
@@ -927,26 +920,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
                 }
             }
             break;
-        case IRONY:  // Outputs Irony/Interrobang symbols
-            if ((get_mods() & MOD_MASK_SHIFT)) {
-                irony_shifted = true;
-            } else {
-                irony_shifted = false;
-            }
-            if (record->event.pressed) {
-                if (irony_shifted) {
-                    send_unicode_string(bang_str);
-                } else {
-                    send_unicode_string(irony_str);
-                }
-                irony_active       = true;
-                irony_pressed_time = timer_read();
-            } else {
-                irony_active       = false;
-                irony_pressed_time = 0;
-                irony_shifted      = false;
-            }
-            return false;
+        // case IRONY:  // Outputs Irony/Interrobang symbols
+            // if ((get_mods() & MOD_MASK_SHIFT)) {
+                // irony_shifted = true;
+            // } else {
+                // irony_shifted = false;
+            // }
+            // if (record->event.pressed) {
+                // if (irony_shifted) {
+                    // send_unicode_string(bang_str);
+                // } else {
+                    // send_unicode_string(irony_str);
+                // }
+                // irony_active       = true;
+                // irony_pressed_time = timer_read();
+            // } else {
+                // irony_active       = false;
+                // irony_pressed_time = 0;
+                // irony_shifted      = false;
+            // }
+            // return false;
         case TG(_NUMPD):  // Toggle the NumPad layer
             if (record->event.pressed) {
                 print("I've activated the NumPad!\n");
@@ -997,10 +990,11 @@ void post_process_record_user(uint16_t keycode, keyrecord_t* record) {
 }
 
 // Spits out some unicode special characters in response to a tap-dance
+/*
 void send_degree_symbol(tap_dance_state_t* state, void* user_data) {
     switch (state->count) {
         case 4:
-            // ℃
+            // r
             register_unicode(0x2103);
             print("You pressed the Degrees key 4 times!\n");
             reset_tap_dance(state);
@@ -1025,6 +1019,7 @@ void send_degree_symbol(tap_dance_state_t* state, void* user_data) {
             break;
     }
 }
+*/
 
 // Handles per-key configuration of Retro-Tapping
 bool get_retro_tapping(uint16_t keycode, keyrecord_t* record) {
@@ -1065,80 +1060,42 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t* record) {
 void leader_end_user(void) {
     did_leader_succeed = false;
 
+    // The single key examples below are retained as structure reference:
+    /*
     if (leader_sequence_one_key(KC_E)) {
         SEND_STRING(SS_LCTL(SS_LSFT("t")));
         did_leader_succeed = true;
     }
-    if (leader_sequence_one_key(KC_C)) {
-        SEND_STRING(SS_LGUI("r") SS_DELAY(250) "calc\n");
-        did_leader_succeed = true;
-    }
-    else if (leader_sequence_one_key(KC_V)) {
-        SEND_STRING(SS_LCTL("v"));
-        did_leader_succeed = true;
-    }
+    */
+    /*
     else if (leader_sequence_two_keys(KC_E, KC_D)) {
         SEND_STRING(SS_LGUI("r") "cmd\n" SS_LCTL("c"));
         did_leader_succeed = true;
     }
-    else if (leader_sequence_two_keys(KC_A, KC_C)) {
-        SEND_STRING(SS_LCTL("a") SS_LCTL("c"));
-        did_leader_succeed = true;
-    }
+    */
+    /*
     else if (leader_sequence_three_keys(KC_C, KC_A, KC_T)) {
         send_unicode_string("😸");
         did_leader_succeed = true;
     }
-    else if (leader_sequence_three_keys(KC_B, KC_A, KC_T)) {
-        send_unicode_string("🦇");
-        did_leader_succeed = true;
-    }
-    else if (leader_sequence_three_keys(KC_D, KC_O, KC_G)) {
-        send_unicode_string("🐶");
-        did_leader_succeed = true;
-    }
-    else if (leader_sequence_five_keys(KC_S, KC_M, KC_I, KC_L, KC_E)) {
-        send_unicode_string("🙂");
-        did_leader_succeed = true;
-    }
+    */
+    /*
     else if (leader_sequence_four_keys(KC_H, KC_A, KC_P, KC_Y)) {
         send_unicode_string("🙂");
         did_leader_succeed = true;
     }
-    else if (leader_sequence_five_keys(KC_H, KC_A, KC_P, KC_P, KC_Y)) {
+    */
+    /*
+    else if (leader_sequence_five_keys(KC_S, KC_M, KC_I, KC_L, KC_E)) {
         send_unicode_string("🙂");
         did_leader_succeed = true;
     }
-    else if (leader_sequence_three_keys(KC_S, KC_A, KC_D)) {
-        send_unicode_string("🙁");
+    else if (leader_sequence_two_keys(KC_C, KC_V)) {
+        SEND_STRING(SS_LCTL(SS_LSFT("V")));
         did_leader_succeed = true;
     }
-    else if (leader_sequence_three_keys(KC_Y, KC_E, KC_S)) {
-        send_unicode_string("👍");
-        did_leader_succeed = true;
-    }
-    else if (leader_sequence_two_keys(KC_N, KC_O)) {
-        send_unicode_string("👎");
-        did_leader_succeed = true;
-    }
-    else if (leader_sequence_three_keys(KC_W, KC_O, KC_W)) {
-        send_unicode_string("🤯");
-        did_leader_succeed = true;
-    }
-    else if (leader_sequence_three_keys(KC_P, KC_O, KC_O)) {
-        send_unicode_string("💩");
-        did_leader_succeed = true;
-    }
-    else if (leader_sequence_four_keys(KC_P, KC_O, KC_O, KC_P)) {
-        send_unicode_string("💩");
-        did_leader_succeed = true;
-    }
-    else if (leader_sequence_four_keys(KC_B, KC_O, KC_A, KC_T)) {
-        send_unicode_string("⛵");
-        did_leader_succeed = true;
-    }
+    */
 }
-
 // Monitors and labels the current state of any tap-dances
 td_state_t cur_dance(tap_dance_state_t* state) {
     if (state->count == 1) {
@@ -1166,8 +1123,8 @@ td_state_t cur_dance(tap_dance_state_t* state) {
 // Create an instance of 'td_tap_t' for each tap dance.
 static td_tap_t sml_state   = {.is_press_action = true, .state = TD_NONE};
 static td_tap_t scap_state  = {.is_press_action = true, .state = TD_NONE};
-static td_tap_t slctl_state = {.is_press_action = true, .state = TD_NONE};
-static td_tap_t slalt_state = {.is_press_action = true, .state = TD_NONE};
+// static td_tap_t slctl_state = {.is_press_action = true, .state = TD_NONE};
+// static td_tap_t slalt_state = {.is_press_action = true, .state = TD_NONE};
 
 // Left-Shift->Sticky-Caps tap-dance finished
 void scap_finished(tap_dance_state_t* state, void* user_data) {
@@ -1201,6 +1158,7 @@ void scap_reset(tap_dance_state_t* state, void* user_data) {
 }
 
 // Sticky-Left-Control tap-dance finished
+/*
 void slctl_finished(tap_dance_state_t* state, void* user_data) {
     slctl_state.state = cur_dance(state);
     switch (slctl_state.state) {
@@ -1227,8 +1185,10 @@ void slctl_finished(tap_dance_state_t* state, void* user_data) {
             }
     }
 }
+*/
 
 // Sticky-Left-Control tap-dance reset
+/*
 void slctl_reset(tap_dance_state_t* state, void* user_data) {
     if (!lctl_sticky) {
         unregister_code(KC_LCTL);
@@ -1237,8 +1197,10 @@ void slctl_reset(tap_dance_state_t* state, void* user_data) {
         slctl_state.state = TD_NONE;
     }
 }
+*/
 
 // Sticky-Left-Alt tap-dance finished
+/*
 void slalt_finished(tap_dance_state_t* state, void* user_data) {
     slalt_state.state = cur_dance(state);
     switch (slalt_state.state) {
@@ -1265,18 +1227,20 @@ void slalt_finished(tap_dance_state_t* state, void* user_data) {
             }
     }
 }
+*/
 
 // Sticky-Left-Alt tap-dance reset
-void slalt_reset(tap_dance_state_t* state, void* user_data) {
-    if (!lalt_sticky) {
-        unregister_code(KC_LALT);
-        slalt_state.state = TD_NONE;
-    } else {
-        slalt_state.state = TD_NONE;
-    }
-}
+// void slalt_reset(tap_dance_state_t* state, void* user_data) {
+    // if (!lalt_sticky) {
+        // unregister_code(KC_LALT);
+        // slalt_state.state = TD_NONE;
+    // } else {
+        // slalt_state.state = TD_NONE;
+    // }
+// }
 
 // Smiley key tap-dance finished
+/*
 void sml_finished(tap_dance_state_t* state, void* user_data) {
     sml_state.state = cur_dance(state);
     switch (sml_state.state) {
@@ -1373,26 +1337,24 @@ void sml_finished(tap_dance_state_t* state, void* user_data) {
             break;
     }
 }
+*/
+
 void sml_reset(tap_dance_state_t* state, void* user_data) { sml_state.state = TD_NONE; }
 
 // Tap Dance definitions
 tap_dance_action_t tap_dance_actions[] = {
     // Tap once for °, twice for ℉, thrice for ℃
-    [TD_DEG_DEGF]    = ACTION_TAP_DANCE_FN(send_degree_symbol),                          //
-    [TD_LSHFT_CAPS]  = ACTION_TAP_DANCE_FN_ADVANCED(NULL, scap_finished, scap_reset),    //
-    [TD_LCTL_STICKY] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, slctl_finished, slctl_reset),  //
-    [TD_LALT_STICKY] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, slalt_finished, slalt_reset),  //
-    [TD_SMILEY]      = ACTION_TAP_DANCE_FN_ADVANCED(NULL, sml_finished, sml_reset),
+    // [TD_DEG_DEGF]    = ACTION_TAP_DANCE_FN(send_degree_symbol),                          //
+    // [TD_LSHFT_CAPS]  = ACTION_TAP_DANCE_FN_ADVANCED(NULL, scap_finished, scap_reset),    //
+    // [TD_LCTL_STICKY] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, slctl_finished, slctl_reset),  //
+    // [TD_LALT_STICKY] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, slalt_finished, slalt_reset),  //
+    // [TD_SMILEY]      = ACTION_TAP_DANCE_FN_ADVANCED(NULL, sml_finished, sml_reset),
 };
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case TD(TD_LSHFT_CAPS):
-        case TD(TD_LCTL_STICKY):
-        case TD(TD_LALT_STICKY):
-            return 200;
-        case TD(TD_SMILEY):
-            return 500;
+        // case TD(TD_SMILEY):
+            // return 500;
         default:
             return TAPPING_TERM;
     }
@@ -1402,6 +1364,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 void matrix_scan_user(void) {
     // Some code for controlling MIDI output
     // Check the shift-state and hold-time for the Irony key
+    /*
     if (irony_active) {
         if ((get_mods() & MOD_MASK_SHIFT)) {
             irony_shifted = true;
@@ -1416,6 +1379,7 @@ void matrix_scan_user(void) {
             }
         }
     }
+    */
 
     // Monitor and respond to the current Alt+Tab state
     if (is_alt_tab_active) {

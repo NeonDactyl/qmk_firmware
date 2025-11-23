@@ -1,7 +1,7 @@
 ENCODER_ENABLE = yes # Enables basic encoder support
 OLED_ENABLE = yes
 # UNICODE_ENABLE = yes # Allow inputting basic unicode characters
-UNICODEMAP_ENABLE = yes # Enable use of Unicode mapping array
+# UNICODEMAP_ENABLE = yes # Enable use of Unicode mapping array
 # UCIS_ENABLE = yes # Another method for generating Unicode characters via maps
 TAP_DANCE_ENABLE = yes # Enable Tap-Dance
 NKRO_ENABLE = yes # Enable N-Key rollover
