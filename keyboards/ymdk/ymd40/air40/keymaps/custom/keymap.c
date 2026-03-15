@@ -41,7 +41,6 @@ enum layer_names {
 #define _____ KC_TRANSPARENT
 #define C_A_D LCA(KC_DEL)
 #define TBLA LT(_TABULA, KC_TAB)
-
 // Declare stored memory config
 typedef union {
     uint32_t raw;
@@ -146,8 +145,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_MOUSY] = LAYOUT_ortho_4x12(
         _____      , _____      , _____      , KC_WH_U    , _____      , _____      , _____      , KC_BTN1    , KC_MS_U    , KC_BTN2    , _____      , _____      ,
         _____      , _____      , KC_WH_L    , KC_WH_D    , KC_WH_R    , _____      , _____      , KC_MS_L    , KC_MS_D    , KC_MS_R    , _____      , _____      ,
-        _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , KC_BTN3    , _____      , _____      , _____      ,
-        TO(_BASE)  , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____
+        _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , KC_BTN3    , _____      , KC_UP      , _____      ,
+        TO(_BASE)  , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , KC_LEFT    , KC_DOWN    , KC_RIGHT
     )
 };
 
