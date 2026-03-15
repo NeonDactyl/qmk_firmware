@@ -386,141 +386,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {                  
  */
 
 
-// Configure encoders
-bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (musical_mode) {
-        if (clockwise) {
-            tap_code16(MU_NEXT);
-        } else {
-            tap_code16(MU_NEXT);
-        }
-    } else {
-        if (muse_mode) {
-            if (IS_LAYER_ON(_RAISE)) {
-                if (clockwise) {
-                    muse_offset++;
-                } else {
-                    muse_offset--;
-                }
-            } else {
-                if (clockwise) {
-                    muse_tempo += 1;
-                } else {
-                    muse_tempo -= 1;
-                }
-            }
-        } else {
-            if (index == 0) { /* First encoder */
-                uint16_t held_keycode_timer = timer_read();
-                switch (get_highest_layer(layer_state)) {
-                    case 0:                                 // Base Layer
-                        if ((get_mods() & MOD_MASK_GUI)) {  // GUI-ed
-                            if (clockwise) {
-                                tap_code(KC_RIGHT);
-
-                            } else {
-                                tap_code(KC_LEFT);
-                            }
-                        } else if ((get_mods() & MOD_MASK_ALT)) {  // Alt-ed
-                            if (clockwise) {
-                                tap_code16(LALT(KC_TAB));  // Alt+Tabbing
-                            } else {
-                                tap_code16(LSA(KC_TAB));
-                            }
-                        } else if ((get_mods() & MOD_MASK_SHIFT)) {  // Shifted
-                            const uint8_t _real_mods = get_mods();
-                            unregister_code16(KC_LSFT);
-                            unregister_code16(KC_RSFT);
-                            clear_mods();
-                            if (clockwise) {
-                                tap_code16(KC_MS_WH_DOWN);
-                            } else {
-                                tap_code16(KC_MS_WH_UP);
-                            }
-                            set_mods(_real_mods);
-                        } else if ((get_mods() & MOD_MASK_CTRL)) {  // Ctrl-ed
-                            if (clockwise) {
-                                tap_code16(RCTL(KC_TAB));  // Ctrl+Tabbing
-                            } else {
-                                tap_code16(RCS(KC_TAB));
-                            }
-                        } else {  // Normal or unspecified modifiers
-                            if (clockwise) {
-                                // Volume control requires extra timer to function correctly
-                                register_code(KC_VOLU);
-                                while (timer_elapsed(held_keycode_timer) < TAP_CODE_DELAY) {
-                                    // no-op
-                                }
-                                unregister_code(KC_VOLD);
-                            } else {
-                                register_code(KC_VOLD);
-                                while (timer_elapsed(held_keycode_timer) < TAP_CODE_DELAY) {
-                                    // no-op
-                                }
-                                unregister_code(KC_VOLU);
-                            }
-                        }
-                        return false;
-                        break;
-                    case 3:  // Symbols Layer
-                        if (clockwise) {
-                            tap_code(KC_WH_D);  // Mouse wheeling
-                        } else {
-                            tap_code(KC_WH_U);
-                        }
-                        return false;
-                        break;
-                    case 4:  // Numbers Layer
-                        if (clockwise) {
-                            tap_code(KC_WH_D);  // Mouse wheeling
-                        } else {
-                            tap_code(KC_WH_U);
-                        }
-                        return false;
-                        break;
-                    case 6:  // Features Layer
-                        if (clockwise) {
-                            tap_code16(KC_DOWN);
-                        } else {
-                            tap_code16(KC_UP);
-                        }
-                    default:  // Any other layer
-                        if ((get_mods() & MOD_MASK_CSAG)) {
-                            if (clockwise) {
-                                WITHOUT_MODS({ SEND_STRING(SS_TAP(X_RIGHT)); });
-                            } else {
-                                WITHOUT_MODS({ SEND_STRING(SS_TAP(X_LEFT)); });
-                            }
-                        } else {
-                            if (clockwise) {
-                                tap_code(KC_DOWN);  // Simple Up/Down
-                            } else {
-                                tap_code(KC_UP);
-                            }
-                        }
-                        return false;
-                        break;
-                }
-            } else if (index == 1) { /* Second encoder (if we had one) */
-                if (clockwise) {
-                    tap_code16(LCTL(KC_LEFT));  // Ctrl+Left/Right
-                } else {
-                    tap_code16(LCTL(KC_RIGHT));
-                }
-            }
-        }
-    }
-    return true;
-}
-
-// OLED CONFIGURATION
-/*
-static void render_logo(void) {
-    static const char PROGMEM qmk_logo[] = {0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0x00};
-
-    oled_write_P(qmk_logo, false);
-}
-*/
 
 // Process Combo events
 void process_combo_event(uint16_t combo_index, bool pressed) {
@@ -920,26 +785,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
                 }
             }
             break;
-        // case IRONY:  // Outputs Irony/Interrobang symbols
-            // if ((get_mods() & MOD_MASK_SHIFT)) {
-                // irony_shifted = true;
-            // } else {
-                // irony_shifted = false;
-            // }
-            // if (record->event.pressed) {
-                // if (irony_shifted) {
-                    // send_unicode_string(bang_str);
-                // } else {
-                    // send_unicode_string(irony_str);
-                // }
-                // irony_active       = true;
-                // irony_pressed_time = timer_read();
-            // } else {
-                // irony_active       = false;
-                // irony_pressed_time = 0;
-                // irony_shifted      = false;
-            // }
-            // return false;
         case TG(_NUMPD):  // Toggle the NumPad layer
             if (record->event.pressed) {
                 print("I've activated the NumPad!\n");
@@ -968,7 +813,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
             sprintf(wpm_str, "Current WPM: %hu", get_current_wpm());
             printf("%s\n", wpm_str);
             break;
-
     }
     return true;
 };
@@ -989,37 +833,6 @@ void post_process_record_user(uint16_t keycode, keyrecord_t* record) {
     }
 }
 
-// Spits out some unicode special characters in response to a tap-dance
-/*
-void send_degree_symbol(tap_dance_state_t* state, void* user_data) {
-    switch (state->count) {
-        case 4:
-            // r
-            register_unicode(0x2103);
-            print("You pressed the Degrees key 4 times!\n");
-            reset_tap_dance(state);
-            break;
-        case 3:
-            //℉
-            register_unicode(0x2109);
-            print("You pressed the Degrees key 3 times!\n");
-            reset_tap_dance(state);
-            break;
-        case 2:
-            // €
-            register_unicode(0x20AC);
-            print("You pressed the Degrees key 2 times!\n");
-            reset_tap_dance(state);
-            break;
-        case 1:
-            // °
-            register_unicode(0x00B0);
-            print("You pressed the Degrees key 1 time!\n");
-            reset_tap_dance(state);
-            break;
-    }
-}
-*/
 
 // Handles per-key configuration of Retro-Tapping
 bool get_retro_tapping(uint16_t keycode, keyrecord_t* record) {
@@ -1059,42 +872,6 @@ bool get_permissive_hold(uint16_t keycode, keyrecord_t* record) {
 // Called when either the leader sequence is completed, or the leader timeout is hit
 void leader_end_user(void) {
     did_leader_succeed = false;
-
-    // The single key examples below are retained as structure reference:
-    /*
-    if (leader_sequence_one_key(KC_E)) {
-        SEND_STRING(SS_LCTL(SS_LSFT("t")));
-        did_leader_succeed = true;
-    }
-    */
-    /*
-    else if (leader_sequence_two_keys(KC_E, KC_D)) {
-        SEND_STRING(SS_LGUI("r") "cmd\n" SS_LCTL("c"));
-        did_leader_succeed = true;
-    }
-    */
-    /*
-    else if (leader_sequence_three_keys(KC_C, KC_A, KC_T)) {
-        send_unicode_string("😸");
-        did_leader_succeed = true;
-    }
-    */
-    /*
-    else if (leader_sequence_four_keys(KC_H, KC_A, KC_P, KC_Y)) {
-        send_unicode_string("🙂");
-        did_leader_succeed = true;
-    }
-    */
-    /*
-    else if (leader_sequence_five_keys(KC_S, KC_M, KC_I, KC_L, KC_E)) {
-        send_unicode_string("🙂");
-        did_leader_succeed = true;
-    }
-    else if (leader_sequence_two_keys(KC_C, KC_V)) {
-        SEND_STRING(SS_LCTL(SS_LSFT("V")));
-        did_leader_succeed = true;
-    }
-    */
 }
 // Monitors and labels the current state of any tap-dances
 td_state_t cur_dance(tap_dance_state_t* state) {
@@ -1157,204 +934,14 @@ void scap_reset(tap_dance_state_t* state, void* user_data) {
     scap_state.state = TD_NONE;
 }
 
-// Sticky-Left-Control tap-dance finished
-/*
-void slctl_finished(tap_dance_state_t* state, void* user_data) {
-    slctl_state.state = cur_dance(state);
-    switch (slctl_state.state) {
-        case TD_SINGLE_HOLD:
-            register_code(KC_LCTL);
-            break;
-        default:
-            if (lctl_sticky) {
-                unregister_code(KC_LCTL);
-                lctl_sticky = false;
-                reset_tap_dance(state);
-                break;
-            } else {
-                if ((state->count) >= TAPPING_TOGGLE) {
-                    register_code(KC_LCTL);
-                    lctl_sticky = true;
-                    reset_tap_dance(state);
-                    break;
-                } else {
-                    register_code(KC_LCTL);
-                    reset_tap_dance(state);
-                    break;
-                }
-            }
-    }
-}
-*/
-
-// Sticky-Left-Control tap-dance reset
-/*
-void slctl_reset(tap_dance_state_t* state, void* user_data) {
-    if (!lctl_sticky) {
-        unregister_code(KC_LCTL);
-        slctl_state.state = TD_NONE;
-    } else {
-        slctl_state.state = TD_NONE;
-    }
-}
-*/
-
-// Sticky-Left-Alt tap-dance finished
-/*
-void slalt_finished(tap_dance_state_t* state, void* user_data) {
-    slalt_state.state = cur_dance(state);
-    switch (slalt_state.state) {
-        case TD_SINGLE_HOLD:
-            register_code(KC_LALT);
-            break;
-        default:
-            if (lalt_sticky) {
-                unregister_code(KC_LALT);
-                lalt_sticky = false;
-                reset_tap_dance(state);
-                break;
-            } else {
-                if ((state->count) >= TAPPING_TOGGLE) {
-                    register_code(KC_LALT);
-                    lalt_sticky = true;
-                    reset_tap_dance(state);
-                    break;
-                } else {
-                    register_code(KC_LALT);
-                    reset_tap_dance(state);
-                    break;
-                }
-            }
-    }
-}
-*/
-
-// Sticky-Left-Alt tap-dance reset
-// void slalt_reset(tap_dance_state_t* state, void* user_data) {
-    // if (!lalt_sticky) {
-        // unregister_code(KC_LALT);
-        // slalt_state.state = TD_NONE;
-    // } else {
-        // slalt_state.state = TD_NONE;
-    // }
-// }
-
-// Smiley key tap-dance finished
-/*
-void sml_finished(tap_dance_state_t* state, void* user_data) {
-    sml_state.state = cur_dance(state);
-    switch (sml_state.state) {
-        default:
-            switch (state->count) {
-                default:
-                    // 👍
-                    send_unicode_string("👍");
-                    print("You pressed the Emoji key at least 11 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 10:
-                    // 👎
-                    send_unicode_string("👎");
-                    print("You pressed the Emoji key 10 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 9:
-                    //🍌
-                    send_unicode_string("🍌");
-                    print("You pressed the Emoji key 9 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 8:
-                    // 🍑
-                    send_unicode_string("🍑");
-                    print("You pressed the Emoji key 8 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 7:
-                    // 🐕
-                    send_unicode_string("🐕");
-                    print("You pressed the Emoji key 7 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 6:
-                    // 🐈
-                    send_unicode_string("🐈");
-                    print("You pressed the Emoji key 6 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 5:
-                    // 🐍
-                    send_unicode_string("🐍");
-                    print("You pressed the Emoji key 5 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 4:
-                    //🐒
-                    send_unicode_string("🐒");
-                    print("You pressed the Emoji key 4 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 3:
-                    // 💩
-                    send_unicode_string("💩");
-                    print("You pressed the Emoji key 3 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 2:
-                    // 🙁
-                    send_unicode_string("🙁");
-                    print("You pressed the Emoji key 2 times!\n");
-                    reset_tap_dance(state);
-                    break;
-                case 1:
-                    // 🙂
-                    send_unicode_string("🙂");
-                    print("You pressed the Emoji key 1 time!\n");
-                    reset_tap_dance(state);
-                    break;
-            }
-            break;
-        case TD_SINGLE_HOLD:
-            // 👍
-            send_unicode_string("👍");
-            print("You single-held the Emoji key!\n");
-            reset_tap_dance(state);
-            break;
-        case TD_DOUBLE_HOLD:
-            // 👎
-            send_unicode_string("👎");
-            print("You double-held the Emoji key!\n");
-            reset_tap_dance(state);
-            break;
-        case TD_TRIPLE_HOLD:
-            //🤯
-            send_unicode_string("🤯");
-            print("You triple-held the Emoji key!\n");
-            reset_tap_dance(state);
-            break;
-        case TD_NONE:
-            reset_tap_dance(state);
-            break;
-    }
-}
-*/
-
 void sml_reset(tap_dance_state_t* state, void* user_data) { sml_state.state = TD_NONE; }
 
 // Tap Dance definitions
 tap_dance_action_t tap_dance_actions[] = {
-    // Tap once for °, twice for ℉, thrice for ℃
-    // [TD_DEG_DEGF]    = ACTION_TAP_DANCE_FN(send_degree_symbol),                          //
-    // [TD_LSHFT_CAPS]  = ACTION_TAP_DANCE_FN_ADVANCED(NULL, scap_finished, scap_reset),    //
-    // [TD_LCTL_STICKY] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, slctl_finished, slctl_reset),  //
-    // [TD_LALT_STICKY] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, slalt_finished, slalt_reset),  //
-    // [TD_SMILEY]      = ACTION_TAP_DANCE_FN_ADVANCED(NULL, sml_finished, sml_reset),
 };
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        // case TD(TD_SMILEY):
-            // return 500;
         default:
             return TAPPING_TERM;
     }
@@ -1362,25 +949,6 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
 // Runs at every complete matrix scan
 void matrix_scan_user(void) {
-    // Some code for controlling MIDI output
-    // Check the shift-state and hold-time for the Irony key
-    /*
-    if (irony_active) {
-        if ((get_mods() & MOD_MASK_SHIFT)) {
-            irony_shifted = true;
-        } else {
-            irony_shifted = false;
-        }
-        if (timer_elapsed(irony_pressed_time) >= IRONY_HOLD_DELAY) {
-            if (irony_shifted) {
-                send_unicode_string(bang_str);
-            } else {
-                send_unicode_string(irony_str);
-            }
-        }
-    }
-    */
-
     // Monitor and respond to the current Alt+Tab state
     if (is_alt_tab_active) {
         if (timer_elapsed(alt_tab_timer) > 1000) {
@@ -1393,16 +961,6 @@ void matrix_scan_user(void) {
 
 // Music mask controls
 
-bool music_mask_user(uint16_t keycode) {
-    switch (keycode) {
-        case RAISE:
-        case LOWER:
-            return false;
-        default:
-            return true;
-    }
-}
-
 void suspend_power_down_user(void) {
     // Runs during start of system suspend
     print("Going to sleep.");
@@ -1410,36 +968,6 @@ void suspend_power_down_user(void) {
 
 void suspend_wakeup_init_user(void) {
     // Runs during wake from system suspend
-}
-
-void keyboard_post_init_user(void) {
-    // Print welcome message to console
-    printf("Welcome to %s!\n", KEEB_MODEL_NAME);
-    // Read the user config from EEPROM
-    user_config.raw   = eeconfig_read_user();
-    do_wake_animation = user_config.do_wakeup_animation;
-    do_wake_audio     = user_config.do_wakeup_audio;
-
-    // Tell the console the status of saved config
-    if (user_config.do_wakeup_animation) {
-        print("Wake animation enabled.\n");
-    } else {
-        print("Wake animation disabled.\n");
-    }
-    if (user_config.do_wakeup_audio) {
-        print("Wake music enabled.\n");
-    } else {
-        print("Wake music disabled.\n");
-    }
-    waking_up      = true;
-
-    // Initialize OLED display
-    /*
-        if (USING_OLED_DISPLAY) {
-            print("Initializing display!\n");
-            render_logo();
-        }
-    */
 }
 
 // EEPROM is getting reset!
@@ -1453,9 +981,3 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 // Communicate 2-way with host via HID_RAW
-#ifdef RAW_ENABLE
-void raw_hid_receive(uint8_t* data, uint8_t length) {
-    //  Sample code below simply echoes back to the console any data received by the raw_hid process
-
-}
-#endif
