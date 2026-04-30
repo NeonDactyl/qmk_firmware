@@ -21,6 +21,8 @@ enum layer_names {
   _QWERTY = _BASE,
   _COLEMAK,
   _DVORAK,
+  _WORKMAN,
+  _GAME,
   _SYMBLS,
   _RAISE = _SYMBLS,
   _NUMBRS,
@@ -38,6 +40,8 @@ enum layer_names {
 #define CLMK DF(_COLEMAK)
 #define DVRK DF(_DVORAK)
 #define QWRT DF(_QWERTY)
+#define WKMN DF(_WORKMAN)
+#define GAME DF(_GAME)
 #define _____ KC_TRANSPARENT
 #define C_A_D LCA(KC_DEL)
 #define TBLA LT(_TABULA, KC_TAB)
@@ -62,6 +66,8 @@ enum custom_keycodes {
     QWERTY,
     COLEMAK,
     DVORAK,
+    WORKMAN,
+    GAMER,
     BACKLIT,
     ALT_TAB,
     KC_PRVWD,
@@ -103,13 +109,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_COLEMAK] = LAYOUT_ortho_4x12(
         KC_ESC     , KC_Q       , KC_W       , KC_F       , KC_P       , KC_G       , KC_J       , KC_L       , KC_U       , KC_Y       , KC_SCLN    , KC_BSPC    ,
         TBLA       , KC_A       , KC_R       , KC_S       , KC_T       , KC_D       , KC_H       , KC_N       , KC_E       , KC_I       , KC_O       , KC_QUOT    ,
-        KC_LSFT    , KC_Z       , KC_X       , KC_C       , KC_V       , KC_B       , KC_K       , KC_M       , KC_COMMA   , KC_DOT     , KC_SLSH    , SC_SENT    ,
+        KC_LSFT    , KC_Z       , KC_X       , KC_C       , KC_V       , KC_B       , KC_K       , KC_M       , KC_COMM    , KC_DOT     , KC_SLSH    , SC_SENT    ,
         KC_LCTL    , KC_LGUI    , KC_LALT    , KC_TAB     , LOWER      , KC_SPC     , KC_SPC     , RAISE      , KC_LEFT    , KC_DOWN    , KC_UP      , KC_RGHT
         ),
     [_DVORAK] = LAYOUT_ortho_4x12(
         KC_ESC     , KC_QUOTE   , KC_COMMA   , KC_DOT     , KC_P       , KC_Y       , KC_F       , KC_G       , KC_C       , KC_R       , KC_L       , KC_BSPC    ,
         TBLA       , KC_A       , KC_O       , KC_E       , KC_U       , KC_I       , KC_D       , KC_H       , KC_T       , KC_N       , KC_S       , KC_SLSH    ,
         KC_LSFT    , KC_SCLN    , KC_Q       , KC_J       , KC_K       , KC_X       , KC_B       , KC_M       , KC_W       , KC_V       , KC_Z       , SC_SENT    ,
+        KC_LCTL    , KC_LGUI    , KC_LALT    , KC_TAB     , LOWER      , KC_SPC     , KC_SPC     , RAISE      , KC_LEFT    , KC_DOWN    , KC_UP      , KC_RGHT
+        ),
+    [_WORKMAN] = LAYOUT_ortho_4x12(
+        KC_ESC     , KC_Q       , KC_D       , KC_R       , KC_W       , KC_B       , KC_J       , KC_F       , KC_U       , KC_P       , KC_SCLN    , KC_BSPC    ,
+        TBLA       , KC_A       , KC_S       , KC_H       , KC_T       , KC_G       , KC_Y       , KC_N       , KC_E       , KC_O       , KC_I       , KC_QUOT    ,
+        KC_LSFT    , KC_Z       , KC_X       , KC_M       , KC_C       , KC_V       , KC_K       , KC_L       , KC_COMM    , KC_DOT     , KC_SLSH    , SC_SENT    ,
+        KC_LCTL    , KC_LGUI    , KC_LALT    , KC_TAB     , LOWER      , KC_SPC     , KC_SPC     , RAISE      , KC_LEFT    , KC_DOWN    , KC_UP      , KC_RGHT
+        ),
+    [_GAME] = LAYOUT_ortho_4x12(
+        KC_ESC     , KC_Q       , KC_W       , KC_E       , KC_R       , KC_T       , KC_Y       , KC_U       , KC_I       , KC_O       , KC_P       , KC_BSPC    ,
+        KC_TAB     , KC_A       , KC_S       , KC_D       , KC_F       , KC_G       , KC_H       , KC_J       , KC_K       , KC_L       , KC_SCLN    , KC_QUOT    ,
+        KC_LSFT    , KC_Z       , KC_X       , KC_C       , KC_V       , KC_B       , KC_N       , KC_M       , KC_COMM    , KC_DOT     , KC_SLSH    , KC_ENTER   ,
         KC_LCTL    , KC_LGUI    , KC_LALT    , KC_TAB     , LOWER      , KC_SPC     , KC_SPC     , RAISE      , KC_LEFT    , KC_DOWN    , KC_UP      , KC_RGHT
         ),
     [_SYMBLS] = LAYOUT_ortho_4x12(
@@ -126,8 +144,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_ADJUST] = LAYOUT_ortho_4x12(
         _____      , UG_TOGG    , UG_HUEU    , UG_SATU    , UG_VALU    , _____      , _____      , _____      , _____      , _____      , _____      , DB_TOGG    ,
-        _____      , UG_NEXT    , UG_HUED    , UG_SATD    , UG_VALD    , AG_NORM    , AG_SWAP    , QWRT       , DVRK       , CLMK       , _____      , _____      ,
-        _____      , BL_TOGG    , BL_DOWN    , BL_UP      , BL_BRTG    , _____      , _____      , _____      , _____      , _____      , _____      , _____      ,
+        _____      , UG_NEXT    , UG_HUED    , UG_SATD    , UG_VALD    , AG_NORM    , AG_SWAP    , QWRT       , DVRK       , CLMK       , WKMN       , _____      ,
+        _____      , BL_TOGG    , BL_DOWN    , BL_UP      , BL_BRTG    , _____      , _____      , GAME       , _____      , _____      , _____      , _____      ,
         QK_BOOT    , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____
     ),
     [_TABULA] = LAYOUT_ortho_4x12(
@@ -145,8 +163,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_MOUSY] = LAYOUT_ortho_4x12(
         _____      , _____      , _____      , KC_WH_U    , _____      , _____      , _____      , KC_BTN1    , KC_MS_U    , KC_BTN2    , _____      , _____      ,
         _____      , _____      , KC_WH_L    , KC_WH_D    , KC_WH_R    , _____      , _____      , KC_MS_L    , KC_MS_D    , KC_MS_R    , _____      , _____      ,
-        _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , KC_BTN3    , _____      , KC_UP      , _____      ,
-        TO(_BASE)  , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , KC_LEFT    , KC_DOWN    , KC_RIGHT
+        _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , KC_BTN3    , _____      , _____      , _____      ,
+        TO(_BASE)  , _____      , _____      , _____      , _____      , _____      , _____      , _____      , _____      , KC_LEFT    , KC_DOWN    , _____
     )
 };
 
@@ -186,6 +204,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
         case DVORAK:
             if (record->event.pressed) {
                 set_single_persistent_default_layer(_DVORAK);
+            }
+            return false;
+            break;
+        case WORKMAN:
+            if (record->event.pressed) {
+                set_single_persistent_default_layer(_WORKMAN);
+            }
+            return false;
+            break;
+        case GAMER:
+            if (record->event.pressed) {
+                set_single_persistent_default_layer(_GAME);
             }
             return false;
             break;
